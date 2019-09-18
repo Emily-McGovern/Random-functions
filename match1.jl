@@ -58,10 +58,10 @@ filter!(x->x≠"",idList);
 # Open large file and read line
 open(NR_TXT_FILE) do file
     for ln in eachline(file)
-        parts = split(ln, \t)
+        parts = split(ln, "\\t")
         if (length(parts) > 1)
             if parts[1] in idList
-                write(outputFile, ln \n)
+                write(outputFile, string(ln, "\\n"))
             end
         end
     end
@@ -73,10 +73,8 @@ output_pbs = PBS_TEMPLATE
 for (key, value) in parsed_args
     global output_pbs
     output_pbs = replace(output_pbs, string("{", key, "}") => string(value))
-	
 end
 
-open("{input_file}_out.txt", "a+") do f
-write(f, output_pbs)
+open(string(parsed_args["input_file"], "_out.txt"), "a+") do f
+    write(f, output_pbs)
 end
-
