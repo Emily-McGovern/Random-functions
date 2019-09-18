@@ -15,17 +15,17 @@ s = ArgParseSettings()
     arg_type = Int
     default = 1
     "input_dir", "-d"
-        help = "input directory"
-        required = true
+    help = "input directory"
+    required = true
     "--input_file", "-i"
     help = "input_file"
     required = true
     "--tax_file", "-r"
     help = "taxonomy reference"
-    default = "/srv/scratch/mrcbio/humangenome/GRCh38_latest_genomic.fna"
+    default = "/srv/scratch/z3527722/autoimmune/B2GPI/NR_20190502_nrprotaccession.lineage.txt"
     "output_file", "-o"
-        help = "outputfile"
-        required = true
+    help = "outputfile"
+    required = true
 end
 parsed_args = parse_args(ARGS, s)
 
