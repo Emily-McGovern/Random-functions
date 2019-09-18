@@ -40,6 +40,7 @@ PBS_TEMPLATE = """#!/bin/bash
 cd {input_dir}
 module load julia/1.1.0
 
+cat <<EOT > taxonomy_match.jl
 ID_FILE_NAME={input_file}
 NR_TAX_FILE={tax_file}
 OUTPUT_FILE={output_file}
@@ -67,7 +68,11 @@ open(NR_TXT_FILE) do file
     end
 end
 
-close(outputFile)"""
+close(outputFile)
+EOT
+
+julia taxonomy_match.jl
+"""
 
 output_pbs = PBS_TEMPLATE
 for (key, value) in parsed_args
@@ -75,6 +80,6 @@ for (key, value) in parsed_args
     output_pbs = replace(output_pbs, string("{", key, "}") => string(value))
 end
 
-open(string(parsed_args["input_file"], "_out.txt"), "a+") do f
+open(string(parsed_args["input_file"], "_out.txt"), "w") do f
     write(f, output_pbs)
 end
