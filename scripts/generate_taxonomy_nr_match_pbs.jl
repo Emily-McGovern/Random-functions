@@ -41,9 +41,9 @@ cd {input_dir}
 module load julia/1.1.0
 
 cat <<EOT > taxonomy_match.jl
-ID_FILE_NAME={input_file}
-NR_TAX_FILE={tax_file}
-OUTPUT_FILE={output_file}
+ID_FILE_NAME="{input_file}"
+NR_TAX_FILE="{tax_file}"
+OUTPUT_FILE="{output_file}"
 
 # Open output filter
 outputFile = open(OUTPUT_FILE, "w")
