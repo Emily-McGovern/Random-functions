@@ -1,6 +1,47 @@
-ID_FILE_NAME="KVSFFCKNKEKKCSY.blast-no1.txt"
-NR_TXT_FILE="NR_20190502_nrprotaccession.lineage.txt"
-OUTPUT_FILE="KVSFFCKNKEKKCSY-no1.output.txt"
+using ArgParse
+
+s = ArgParseSettings()
+@add_arg_table s begin
+    "--walltime", "-w"
+    help = "Walltime hours"
+    arg_type = Int
+    default = 10
+    "--mem", "-m"
+    help = "mem Gb"
+    arg_type = Int
+    default = 10
+    "--threads", "-t"
+    help = "threads - refer to clumpify.sh"
+    arg_type = Int
+    default = 1
+    "input_dir", "-d"
+        help = "input directory"
+        required = true
+    "--input_file", "-i"
+    help = "input_file"
+    required = true
+    "--tax_file", "-r"
+    help = "taxonomy reference"
+    default = "/srv/scratch/mrcbio/humangenome/GRCh38_latest_genomic.fna"
+    "output_file", "-o"
+        help = "outputfile"
+        required = true
+end
+parsed_args = parse_args(ARGS, s)
+
+PBS_TEMPLATE = raw"""#!/bin/bash
+#PBS -N {input_file}_match
+#PBS -l nodes=1:ppn={threads}
+#PBS -l walltime={walltime}:00:00
+#PBS -l mem={mem}GB
+#PBS -m ae
+#PBS -M emily.mcgovern@unsw.edu.au
+
+cd {input_dir}
+
+ID_FILE_NAME={input_file}
+NR_TAX_FILE={tax_file}
+OUTPUT_FILE={output_file}
 
 # Open output filter
 outputFile = open(OUTPUT_FILE, "w")
@@ -19,7 +60,7 @@ open(NR_TXT_FILE) do file
         parts = split(ln, "\t")
         if (length(parts) > 1)
             if parts[1] in idList
-                write(outputFile, ln)
+                write(outputFile, ln \n)
             end
         end
     end
