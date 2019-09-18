@@ -14,7 +14,7 @@ s = ArgParseSettings()
     help = "threads - refer to clumpify.sh"
     arg_type = Int
     default = 1
-    "input_dir", "-d"
+    "--input_dir", "-d"
     help = "input directory"
     required = true
     "--input_file", "-i"
@@ -23,13 +23,13 @@ s = ArgParseSettings()
     "--tax_file", "-r"
     help = "taxonomy reference"
     default = "/srv/scratch/z3527722/autoimmune/B2GPI/NR_20190502_nrprotaccession.lineage.txt"
-    "output_file", "-o"
+    "--output_file", "-o"
     help = "outputfile"
     required = true
 end
 parsed_args = parse_args(ARGS, s)
 
-PBS_TEMPLATE = raw"""#!/bin/bash
+PBS_TEMPLATE = """#!/bin/bash
 #PBS -N {input_file}_match
 #PBS -l nodes=1:ppn={threads}
 #PBS -l walltime={walltime}:00:00
@@ -38,6 +38,7 @@ PBS_TEMPLATE = raw"""#!/bin/bash
 #PBS -M emily.mcgovern@unsw.edu.au
 
 cd {input_dir}
+module load julia/1.1.0
 
 ID_FILE_NAME={input_file}
 NR_TAX_FILE={tax_file}
@@ -57,7 +58,7 @@ filter!(x->x≠"",idList);
 # Open large file and read line
 open(NR_TXT_FILE) do file
     for ln in eachline(file)
-        parts = split(ln, "\t")
+        parts = split(ln, \t)
         if (length(parts) > 1)
             if parts[1] in idList
                 write(outputFile, ln \n)
@@ -66,4 +67,16 @@ open(NR_TXT_FILE) do file
     end
 end
 
-close(outputFile)
+close(outputFile)"""
+
+output_pbs = PBS_TEMPLATE
+for (key, value) in parsed_args
+    global output_pbs
+    output_pbs = replace(output_pbs, string("{", key, "}") => string(value))
+	
+end
+
+open("{input_file}_out.txt", "a+") do f
+write(f, output_pbs)
+end
+
