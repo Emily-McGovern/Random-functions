@@ -57,7 +57,7 @@ close(idFile)
 filter!(x->x≠"",idList);
 
 # Open large file and read line
-open(NR_TXT_FILE) do file
+open(NR_TAX_FILE) do file
     for ln in eachline(file)
         parts = split(ln, "\\t")
         if (length(parts) > 1)
